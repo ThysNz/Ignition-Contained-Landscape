@@ -1,0 +1,26 @@
+# Secrets
+.env
+*.pem
+*.key
+
+# Gateway/DB backups (contain secrets and data)
+*.gwbk
+*.bak
+*.archive
+**/backups/*
+!**/backups/.gitkeep
+
+# Logs
+*.log
+
+# Large binaries / installers
+_unused/
+*.exe
+*.tar.gz
+Tools/shared/*
+!Tools/shared/install-designer.sh
+
+# App/OS cruft
+.applications/
+Thumbs.db
+.DS_Store

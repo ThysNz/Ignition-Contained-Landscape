@@ -1,0 +1,39 @@
+# Ignition 8.3.10 gateway (official Inductive Automation image) - "Backend"
+# Runs alongside the 8.1.55 Frontend gateway, so it uses different host ports.
+# Start:  docker compose up -d      Stop: docker compose stop
+# Web UI: http://localhost:9088
+name: ignition-backend
+services:
+  ignition:
+    image: inductiveautomation/ignition:8.3.10
+    container_name: ignition-backend
+    hostname: ignition-backend
+    restart: unless-stopped
+    ports:
+      - "9088:8088"   # HTTP (gateway web UI / Designer / Perspective)
+      - "9043:8043"   # HTTPS
+      - "9060:8060"   # Gateway Network
+    environment:
+      ACCEPT_IGNITION_EULA: "Y"
+      GATEWAY_ADMIN_USERNAME: ${GATEWAY_ADMIN_USERNAME:-admin}
+      GATEWAY_ADMIN_PASSWORD: ${GATEWAY_ADMIN_PASSWORD:-password}
+      IGNITION_EDITION: standard
+      TZ: Pacific/Auckland
+    volumes:
+      - ignition-backend-data:/usr/local/bin/ignition/data   # gateway state
+      - ./backups:/backups                                   # .gwbk backups in/out
+    networks:
+      - default
+      - ignition-net
+    command: >
+      -n ignition-backend
+      -m 2048
+      --
+      wrapper.java.initmemory=512
+
+volumes:
+  ignition-backend-data:
+
+networks:
+  ignition-net:
+    external: true

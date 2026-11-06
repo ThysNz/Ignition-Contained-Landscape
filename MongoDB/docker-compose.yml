@@ -1,0 +1,30 @@
+# MongoDB - shared network with the Ignition stack
+# Start: docker compose up -d     Stop: docker compose stop
+# Connect from other containers: mongodb://mongo:27017   From host: mongodb://localhost:27017
+name: ignition-mongo
+services:
+  mongo:
+    image: mongo:7
+    container_name: mongo
+    hostname: mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      TZ: Pacific/Auckland
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+      - mongo_config:/data/configdb
+      - ./backups:/backups
+    networks:
+      - ignition-net
+
+volumes:
+  mongo_data:
+  mongo_config:
+
+networks:
+  ignition-net:
+    external: true

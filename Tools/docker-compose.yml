@@ -1,0 +1,39 @@
+# Ignition tools desktop - Linux desktop in your browser with draw.io + Ignition Designer
+# Build+start: docker compose up -d --build
+# Open:        https://localhost:3001   (accept the self-signed certificate warning)
+name: ignition-tools
+services:
+  tools:
+    build: .
+    image: ignition-tools:latest
+    container_name: ignition-tools
+    hostname: ignition-tools
+    restart: unless-stopped
+    shm_size: "2gb"                  # browsers/Electron/Java UIs need shared memory
+    security_opt:
+      - seccomp=unconfined           # recommended by linuxserver for desktop apps
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: Pacific/Auckland
+      TITLE: Ignition Tools
+      CUSTOM_USER: ${TOOLS_USER:-thys}
+      PASSWORD: ${TOOLS_PASSWORD:-ChangeMe123!}
+    ports:
+      - "3000:3000"   # HTTP
+      - "3001:3001"   # HTTPS (use this one)
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   # reach the gateways on your PC's ports
+    networks:
+      - default
+      - ignition-net
+    volumes:
+      - tools-home:/config           # desktop home: Designer Launcher, settings, draw.io prefs
+      - ./shared:/config/shared      # visible on Windows as D:\ignition\Tools\shared
+
+volumes:
+  tools-home:
+
+networks:
+  ignition-net:
+    external: true
